@@ -2,8 +2,6 @@ package pl.wolkowski.summonerfetcher.service;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.boot.SpringApplication;
-import org.springframework.context.annotation.Bean;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -13,8 +11,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestTemplate;
 import pl.wolkowski.summonerfetcher.model.champion.ChampionAdapter;
-import pl.wolkowski.summonerfetcher.model.mastery.*;
-import pl.wolkowski.summonerfetcher.model.summoner.*;
+import pl.wolkowski.summonerfetcher.model.mastery.Mastery;
+import pl.wolkowski.summonerfetcher.model.mastery.MasteryList;
+import pl.wolkowski.summonerfetcher.model.summoner.Summoner;
+import pl.wolkowski.summonerfetcher.model.summoner.SummonerState;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -62,26 +62,28 @@ public class DataService {
 
     /**
      * Get parsed details about users mastery of chosen champion from RiotGames API.
-     * @param username A user from whom the data will be fetched.
+     *
+     * @param username   A user from whom the data will be fetched.
      * @param championId The id of the champion which the data will be fetched.
      * @return A {@link Mastery} that will contain details about users mastery of chosen champion.
      */
-    public Mastery getChampionMasteryFromUsername(String username, int championId) {
-        return getChampionMasteryFromUsername(username, championId, new RestTemplate());
+    public Mastery getChampionMasteryFromUsernameAndId(String username, int championId) {
+        return getChampionMasteryFromUsernameAndId(username, championId, new RestTemplate());
     }
 
     /**
      * Get parsed details about users mastery of chosen champion
-     * from RiotGames API from a given {@link RestTemplate}..
-     * @param username A user from whom the data will be fetched.
+     * from RiotGames API from a given {@link RestTemplate}.
+     *
+     * @param username   A user from whom the data will be fetched.
      * @param championId The id of the champion which the data will be fetched.
      * @return A {@link Mastery} that will contain details about users mastery of chosen champion.
      */
-    public Mastery getChampionMasteryFromUsername(String username, int championId, RestTemplate restTemplate){
+    public Mastery getChampionMasteryFromUsernameAndId(String username, int championId, RestTemplate restTemplate) {
         Summoner summoner = getSummoner(username);
         Mastery mastery = new Mastery();
 
-        if(summoner.getSummonerState() == SummonerState.NOT_FOUND){
+        if (summoner.getSummonerState() == SummonerState.NOT_FOUND) {
             mastery.setSummonerState(SummonerState.NOT_FOUND);
             return mastery;
         }
@@ -98,8 +100,62 @@ public class DataService {
             );
 
             mastery = masteryResponseEntity.getBody();
-            if(mastery!=null)
+            if (mastery != null)
                 mastery.setChampionName(championAdapter.getChampionNameById(championId));
+
+        } catch (HttpStatusCodeException e) {
+            mastery.setSummonerState(SummonerState.NOT_FOUND);
+        }
+
+        return mastery;
+    }
+
+    /**
+     * Get parsed details about users mastery of chosen champion from RiotGames API.
+     *
+     * @param username     A user from whom the data will be fetched.
+     * @param championName The name of the champion which the data will be fetched.
+     * @return A {@link Mastery} that will contain details about users mastery of chosen champion.
+     */
+    public Mastery getChampionMasteryFromUsernameAndName(String username, String championName) {
+        return getChampionMasteryFromUsernameAndName(username, championName, new RestTemplate());
+    }
+
+    /**
+     * Get parsed details about users mastery of chosen champion
+     * from RiotGames API from a given {@link RestTemplate}.
+     *
+     * @param username     A user from whom the data will be fetched.
+     * @param championName The name of the champion which the data will be fetched.
+     * @return A {@link Mastery} that will contain details about users mastery of chosen champion.
+     */
+    public Mastery getChampionMasteryFromUsernameAndName(String username, String championName, RestTemplate restTemplate) {
+        Summoner summoner = getSummoner(username);
+        Mastery mastery = new Mastery();
+
+        mastery.setChampionId(championAdapter.getChampionIdByName(championName));
+
+        if (summoner.getSummonerState() == SummonerState.NOT_FOUND
+                || mastery.getChampionId() == -1) {
+            mastery.setSummonerState(SummonerState.NOT_FOUND);
+            return mastery;
+        }
+
+        try {
+            ResponseEntity<Mastery> masteryResponseEntity = restTemplate.exchange(
+                    "https://eun1.api.riotgames.com/lol/champion-mastery/v4/champion-masteries"
+                            + "/by-summoner/" + summoner.getId()
+                            + "/by-champion/" + mastery.getChampionId(),
+                    HttpMethod.GET,
+                    new HttpEntity<>(header),
+                    new ParameterizedTypeReference<>() {
+                    }
+            );
+
+            mastery = masteryResponseEntity.getBody();
+
+            if (mastery != null)
+                mastery.setChampionName(championName);
 
         } catch (HttpStatusCodeException e) {
             mastery.setSummonerState(SummonerState.NOT_FOUND);
@@ -111,6 +167,7 @@ public class DataService {
     /**
      * Get parsed list of champion mastery details for every champion of
      * provided user from the RiotGames REST API.
+     *
      * @param username A user from whom the data will be fetched.
      * @return A {@link MasteryList} that will contain details about champion mastery of every champion.
      */
