@@ -24,7 +24,7 @@ public class DataServiceTests {
 
     // getSummoner method
     @Test
-    @DisplayName("Return FOUND summoner for valid username.")
+    @DisplayName("Return EXISTING summoner for valid username.")
     void testGetSummoner_ValidNickname_ReturnsSummoner(){
         RestTemplate restTemplate = Mockito.mock(RestTemplate.class);
         Summoner validSummoner = new Summoner(
@@ -37,7 +37,7 @@ public class DataServiceTests {
         );
 
         Mockito.when(restTemplate.exchange(
-                "https://eun1.api.riotgames.com/lol/summoner/v4/summoners/by-name/testName",
+                "https://eun1.api.riotgames.com/lol/summoner/v4/summoners/by-name/validUser",
                 HttpMethod.GET,
                 new HttpEntity<>(header),
                 new ParameterizedTypeReference<Summoner>() {})
@@ -56,7 +56,7 @@ public class DataServiceTests {
         RestTemplate restTemplate = Mockito.mock(RestTemplate.class);
 
         Mockito.when(restTemplate.exchange(
-                "https://eun1.api.riotgames.com/lol/summoner/v4/summoners/by-name/testName",
+                "https://eun1.api.riotgames.com/lol/summoner/v4/summoners/by-name/invalidUser",
                 HttpMethod.GET,
                 new HttpEntity<>(header),
                 new ParameterizedTypeReference<Summoner>() {})
@@ -67,9 +67,6 @@ public class DataServiceTests {
         Assertions.assertNull(summoner);
     }
 
-
-
-
     private HttpHeaders getHeader() {
         HttpHeaders header = new HttpHeaders();
         try{
@@ -78,6 +75,7 @@ public class DataServiceTests {
             header.set("X-Riot-Token", riotToken);
         }catch (IOException e){
             System.out.println("File \"riotToken.txt\" not found");
+            return null;
         }
 
         return header;
