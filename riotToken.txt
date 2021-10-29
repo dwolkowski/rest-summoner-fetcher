@@ -1,1 +1,1 @@
-<Your RiotAPI Token>
+<Insert your API Token here>
