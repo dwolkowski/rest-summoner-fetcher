@@ -2,6 +2,7 @@ package pl.wolkowski.summonerfetcher.controller;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
 import pl.wolkowski.summonerfetcher.model.summoner.Summoner;
 import pl.wolkowski.summonerfetcher.model.summoner.SummonerState;
 import pl.wolkowski.summonerfetcher.service.DataService;
@@ -18,7 +19,7 @@ public class SummonerController {
      */
     @GetMapping(path = "/summoner/{username}")
     ResponseEntity<Summoner> getSummoner(@PathVariable("username") String username) {
-        Summoner summoner = dataService.getSummoner(username);
+        Summoner summoner = dataService.getSummoner(username, new RestTemplate());
 
         if(summoner.getSummonerState() == SummonerState.NOT_FOUND)
             return ResponseEntity.notFound().build();

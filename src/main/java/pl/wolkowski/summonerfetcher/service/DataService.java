@@ -3,6 +3,7 @@ package pl.wolkowski.summonerfetcher.service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
+import org.springframework.context.annotation.Bean;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -33,7 +34,14 @@ public class DataService {
      * @return A {@link Summoner} that will contain data about user.
      */
     public Summoner getSummoner(String username) {
-        RestTemplate restTemplate = new RestTemplate();
+        return getSummoner(username, new RestTemplate());
+    }
+    /**
+     * Get parsed data of a provided user from the RiotGames API from a given {@link RestTemplate}.
+     * @param username A user from whom the data will be fetched.
+     * @return A {@link Summoner} that will contain data about user.
+     */
+    public Summoner getSummoner(String username, RestTemplate restTemplate){
         Summoner summoner = new Summoner();
 
         try {
@@ -49,7 +57,6 @@ public class DataService {
         } catch (HttpStatusCodeException e) {
             summoner.setSummonerState(SummonerState.NOT_FOUND);
         }
-
         return summoner;
     }
 
@@ -60,9 +67,19 @@ public class DataService {
      * @return A {@link Mastery} that will contain details about users mastery of chosen champion.
      */
     public Mastery getChampionMasteryFromUsername(String username, int championId) {
+        return getChampionMasteryFromUsername(username, championId, new RestTemplate());
+    }
+
+    /**
+     * Get parsed details about users mastery of chosen champion
+     * from RiotGames API from a given {@link RestTemplate}..
+     * @param username A user from whom the data will be fetched.
+     * @param championId The id of the champion which the data will be fetched.
+     * @return A {@link Mastery} that will contain details about users mastery of chosen champion.
+     */
+    public Mastery getChampionMasteryFromUsername(String username, int championId, RestTemplate restTemplate){
         Summoner summoner = getSummoner(username);
         Mastery mastery = new Mastery();
-        RestTemplate restTemplate = new RestTemplate();
 
         if(summoner.getSummonerState() == SummonerState.NOT_FOUND){
             mastery.setSummonerState(SummonerState.NOT_FOUND);
@@ -81,7 +98,8 @@ public class DataService {
             );
 
             mastery = masteryResponseEntity.getBody();
-            mastery.setChampionName(championAdapter.getChampionNameById(championId));
+            if(mastery!=null)
+                mastery.setChampionName(championAdapter.getChampionNameById(championId));
 
         } catch (HttpStatusCodeException e) {
             mastery.setSummonerState(SummonerState.NOT_FOUND);
@@ -96,11 +114,19 @@ public class DataService {
      * @param username A user from whom the data will be fetched.
      * @return A {@link MasteryList} that will contain details about champion mastery of every champion.
      */
-
     public MasteryList getMasteryListFromUsername(String username) {
+        return getMasteryListFromUsername(username, new RestTemplate());
+    }
+
+    /**
+     * Get parsed list of champion mastery details for every champion of
+     * provided user from the RiotGames REST API from a given {@link RestTemplate}.
+     * @param username A user from whom the data will be fetched.
+     * @return A {@link MasteryList} that will contain details about champion mastery of every champion.
+     */
+    public MasteryList getMasteryListFromUsername(String username, RestTemplate restTemplate){
         Summoner summoner = getSummoner(username);
         MasteryList masteryList = new MasteryList();
-        RestTemplate restTemplate = new RestTemplate();
 
         try {
             ResponseEntity<List<Mastery>> masteryListResponseEntity = restTemplate.exchange(
@@ -110,7 +136,6 @@ public class DataService {
                     new ParameterizedTypeReference<>() {
                     }
             );
-
             masteryList.setMasteries(masteryListResponseEntity.getBody());
 
         } catch (HttpStatusCodeException e) {
@@ -126,8 +151,8 @@ public class DataService {
     }
 
     /**
-     * Get HttpHeader which contains RiotGames API key from riotToken.txt file.
-     * @return A {@link HttpHeaders} which will contain the key required to use the RiotGames API.
+     * Get HttpHeader which contains RiotGames API key from "riotToken.txt" file.
+     * @return A {@link HttpHeaders} which will contain the key required to access the RiotGames API.
      */
     private HttpHeaders getHeader() {
         HttpHeaders header = new HttpHeaders();
