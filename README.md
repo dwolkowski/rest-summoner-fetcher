@@ -33,11 +33,14 @@ ___
 
 Endpoints are available on `http://localhost` on port `8080`.
 
-| GET                                         | Return type                                                   | Success status codes   | Error status codes                     |
+| GET Method                                  | Return type                                                   | Success status codes   | Error status codes                     |
 | --------------------------------------------| --------------------------------------------------------------| ---------------------  | ---------------------------------------|
 | **/summoner/{user}**                        | A JSON response with detailed information about user.         | 200                    | 404 (Thrown when user cannot be found) |
 | **/mastery/{user}**                         | A JSON response with champion mastery list of provided user.  | 200                    | 404 (Thrown when user cannot be found) |
-| **/mastery/{user}/{championId}**            | A JSON response with chosen champion mastery of provided user.| 200                    | 404 (Thrown when user cannot be found) | 
+| **/mastery/{user}/{champion}**              | A JSON response with chosen champion mastery of provided user.| 200                    | 404 (Thrown when user or champion cannot be found) |
+
+<sup> ***`user` - Username of the player*** </sup> <br />
+<sup> ***`champion` - Id or Name of the champion*** </sup>
 ___
 ## Testing
 To test the application, simply execute this command:
