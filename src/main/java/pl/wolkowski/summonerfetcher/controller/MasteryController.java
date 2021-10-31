@@ -8,12 +8,19 @@ import org.springframework.web.client.RestTemplate;
 import pl.wolkowski.summonerfetcher.model.mastery.Mastery;
 import pl.wolkowski.summonerfetcher.model.mastery.MasteryList;
 import pl.wolkowski.summonerfetcher.model.summoner.SummonerState;
-import pl.wolkowski.summonerfetcher.service.DataService;
+import pl.wolkowski.summonerfetcher.service.MasteryChampionService;
+import pl.wolkowski.summonerfetcher.service.MasteryListService;
 
 @RestController
 public class MasteryController {
 
-    DataService dataService = new DataService();
+    private final MasteryChampionService masteryChampionService;
+    private final MasteryListService masteryListService;
+
+    public MasteryController(MasteryChampionService masteryChampionService, MasteryListService masteryListService){
+        this.masteryChampionService = masteryChampionService;
+        this.masteryListService = masteryListService;
+    }
 
     /**
      * Returns a JSON response with a full list of champion mastery details
@@ -23,7 +30,7 @@ public class MasteryController {
      */
     @GetMapping(path = "/mastery/{username}")
     ResponseEntity<MasteryList> getMastery(@PathVariable("username") String username) {
-        MasteryList masteryBatch = dataService.getMasteryListFromUsername(username, new RestTemplate());
+        MasteryList masteryBatch = masteryListService.getMasteryListFromUsername(username, new RestTemplate());
 
         if (masteryBatch.getSummonerState() == SummonerState.NOT_FOUND)
             return ResponseEntity.notFound().build();
@@ -32,38 +39,17 @@ public class MasteryController {
 
     /**
      * Returns a JSON response with champion mastery details of chosen champion for provided user.
-     *
      * @param username A user from whom the data will be fetched.
      * @param champion The id or name of the champion which the data will be fetched.
      * @return A champion mastery details of chosen champion for provided user.
      */
     @GetMapping(path = "/mastery/{username}/{champion}")
     ResponseEntity<Mastery> getMastery(@PathVariable("username") String username, @PathVariable("champion") String champion) {
-        Mastery mastery;
-        try {
-            int championId = Integer.parseInt(champion);
-            mastery = dataService.getChampionMasteryFromUsernameAndId(username, championId);
-        } catch (NumberFormatException e) {
-            mastery = dataService.getChampionMasteryFromUsernameAndName(username, champion);
-        }
+        Mastery mastery = masteryChampionService.getChampionMastery(username, champion);
 
         if (mastery.getSummonerState() == SummonerState.NOT_FOUND)
             return ResponseEntity.notFound().build();
         return ResponseEntity.ok(mastery);
     }
 
-//    /**
-//     * Returns a JSON response with champion mastery details of chosen champion for provided user.
-//     * @param username A user from whom the data will be fetched.
-//     * @param championName The name of the champion which the data will be fetched.
-//     * @return A champion mastery details of chosen champion for provided user.
-//     */
-//    @GetMapping(path = "/mastery/{username}/{championName}")
-//    ResponseEntity<Mastery> getMastery(@PathVariable("username") String username, @PathVariable("championName") String championName) {
-//        Mastery mastery = dataService.getChampionMasteryFromUsernameAndName(username, championName);
-//
-//        if (mastery.getSummonerState() == SummonerState.NOT_FOUND)
-//            return ResponseEntity.notFound().build();
-//        return ResponseEntity.ok(mastery);
-//    }
 }
