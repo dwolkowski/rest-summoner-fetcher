@@ -1,5 +1,7 @@
 package pl.wolkowski.summonerfetcher.model.champion;
 
+import org.springframework.stereotype.Component;
+
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -8,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+@Component
 public class ChampionAdapter {
     Map<Integer, String> championMapById;
     Map<String, Integer> championMapByName;
@@ -24,7 +27,7 @@ public class ChampionAdapter {
             for (String line : list) {
                 splitted = line.split("=");
                 championMapById.put(Integer.parseInt(splitted[0]), splitted[1]);
-                championMapByName.put(splitted[1], Integer.parseInt(splitted[0]));
+                championMapByName.put(splitted[1].toLowerCase(), Integer.parseInt(splitted[0]));
             }
         } catch (FileNotFoundException e) {
             System.out.println("File \"champions.txt\" not found.");
@@ -37,6 +40,7 @@ public class ChampionAdapter {
 
     // Returns -1 if champion is unknown.
     public int getChampionIdByName(String championName) {
+        championName = championName.toLowerCase();
         return championMapByName.getOrDefault(championName, -1);
     }
 
