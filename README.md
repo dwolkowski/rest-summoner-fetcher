@@ -14,7 +14,7 @@ git clone https://github.com/dwolkowski/rest-summoner-fetcher
 cd rest-summoner-fetcher
 ```
 
-Now to gain access to **Riot Games API** you need to generate yours personal **Token** on [Riot Developer Portal](https://developer.riotgames.com/) 
+Now to gain access to **Riot Games API** you need to generate yours personal **Token** on [Riot Developer Portal](https://developer.riotgames.com/)
 and paste it into the file `riotToken.txt`. The next step is:
 
 For **Windows** users:
@@ -27,17 +27,19 @@ For **Linux** users:
 ./gradlew build 
 ./java -jar summoner-fetcher-0.0.1.jar
 ```
- After that, the application should launch soon.
+After that, the application should launch soon.
 ___
 ## Endpoints
 
 Endpoints are available on `http://localhost` on port `8080`.
 
-| GET Method                                  | Return type                                                   | Success status codes   | Error status codes                     |
-| --------------------------------------------| --------------------------------------------------------------| ---------------------  | ---------------------------------------|
-| **/summoner/{user}**                        | A JSON response with detailed information about user.         | 200                    | 404 (Thrown when user cannot be found) |
-| **/mastery/{user}**                         | A JSON response with champion mastery list of provided user.  | 200                    | 404 (Thrown when user cannot be found) |
-| **/mastery/{user}/{champion}**              | A JSON response with chosen champion mastery of provided user.| 200                    | 404 (Thrown when user or champion cannot be found) |
+| GET Method                          | Return type                                                   | Success status codes   | Error status codes                     |
+| ------------------------------------| --------------------------------------------------------------| ---------------------  | ---------------------------------------|
+| **/summoner/{user}**                | A JSON response with detailed information about user.         | 200                    | 404 (Thrown when user cannot be found) |
+| **/mastery/{user}**                 | A JSON response with champion mastery list of provided user.  | 200                    | 404 (Thrown when user cannot be found) |
+| **/mastery/{user}/{champion}**      | A JSON response with chosen champion mastery of provided user.| 200                    | 404 (Thrown when user or champion cannot be found) |
+| **/mastery/{user}/chest/acquired**  | A JSON response with list of champions where chest was acquired.  | 200                | 404 (Thrown when user cannot be found) |
+| **/mastery/{user}/chest/available** | A JSON response with list of champions where chest is available.  | 200                | 404 (Thrown when user cannot be found) |
 
 <sup> ***`user` - Username of the player*** </sup> <br />
 <sup> ***`champion` - Id or Name of the champion*** </sup>
