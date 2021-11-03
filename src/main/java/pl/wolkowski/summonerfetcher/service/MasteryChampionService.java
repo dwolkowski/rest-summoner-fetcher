@@ -31,18 +31,18 @@ public class MasteryChampionService {
      * @return A {@link Mastery} that will contain details about users mastery of chosen champion.
      */
     public Mastery getChampionMastery(String username, String champion) {
-        return getChampionMastery(username, champion, new RestTemplate());
+        Summoner summoner = summonerService.getSummoner(username);
+        return getChampionMastery(summoner, champion, new RestTemplate());
     }
 
     /**
      * Get parsed details about users mastery of chosen champion
      * from RiotGames API from a given {@link RestTemplate}.
-     * @param username A user from whom the data will be fetched.
+     * @param summoner A summoner from whom the data will be fetched.
      * @param champion The name or id of the champion which the data will be fetched.
      * @return A {@link Mastery} that will contain details about users mastery of chosen champion.
      */
-    public Mastery getChampionMastery(String username, String champion, RestTemplate restTemplate) {
-        Summoner summoner = summonerService.getSummoner(username);
+    public Mastery getChampionMastery( Summoner summoner, String champion, RestTemplate restTemplate) {
         Mastery mastery = new Mastery();
         int championId;
 
