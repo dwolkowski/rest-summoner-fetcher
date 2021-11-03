@@ -16,11 +16,11 @@ public class SummonerServiceTests {
 
     private final HttpHeaders header = Header.get();
     private final SummonerService summonerService = new SummonerService();
+    private final RestTemplate restTemplate = Mockito.mock(RestTemplate.class);
 
     @Test
     @DisplayName("Return EXISTING summoner for valid username.")
     void testGetSummoner_ValidNickname_ReturnsSummoner(){
-        RestTemplate restTemplate = Mockito.mock(RestTemplate.class);
         Summoner validSummoner = new Summoner(
                 SummonerState.EXISTING,
                 "validUser",
@@ -44,10 +44,8 @@ public class SummonerServiceTests {
     }
 
     @Test
-    @DisplayName("Return null for invalid username.")
+    @DisplayName("Return NULL for invalid username.")
     void testGetSummoner_InvalidNickname_ReturnsSummoner(){
-        RestTemplate restTemplate = Mockito.mock(RestTemplate.class);
-
         Mockito.when(restTemplate.exchange(
                 "https://eun1.api.riotgames.com/lol/summoner/v4/summoners/by-name/invalidUser",
                 HttpMethod.GET,
