@@ -68,7 +68,7 @@ public class MasteryChampionServiceTests {
                 new ParameterizedTypeReference<Mastery>() {})
         ).thenReturn(new ResponseEntity<>(validMasteryChampion, HttpStatus.OK));
 
-        Mastery testMasteryChampion = masteryChampionService.getChampionMastery(validSummoner,"invalidChampion",  restTemplate);
+        Mastery testMasteryChampion = masteryChampionService.getChampionMastery(validSummoner,"Annie",  restTemplate);
 
         Assertions.assertSame(SummonerState.EXISTING, testMasteryChampion.getSummonerState());
         Assertions.assertEquals(validMasteryChampion, testMasteryChampion);
@@ -87,7 +87,7 @@ public class MasteryChampionServiceTests {
                 new ParameterizedTypeReference<Mastery>() {})
         ).thenReturn(new ResponseEntity<>(HttpStatus.NOT_FOUND));
 
-        Mastery testMasteryChampion = masteryChampionService.getChampionMastery(validSummoner,"Anniee",  restTemplate);
+        Mastery testMasteryChampion = masteryChampionService.getChampionMastery(validSummoner,"invalidChampion",  restTemplate);
 
         Assertions.assertNull(testMasteryChampion);
 

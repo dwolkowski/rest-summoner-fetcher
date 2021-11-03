@@ -38,7 +38,7 @@ public class MasteryChampionService {
     /**
      * Get parsed details about users mastery of chosen champion
      * from RiotGames API from a given {@link RestTemplate}.
-     * @param summoner A summoner from whom the data will be fetched.
+     * @param summoner A {@link Summoner} from whom the data will be fetched.
      * @param champion The name or id of the champion which the data will be fetched.
      * @return A {@link Mastery} that will contain details about users mastery of chosen champion.
      */
