@@ -20,12 +20,12 @@ and paste it into the file `riotToken.txt`. The next step is:
 For **Windows** users:
 ```
 gradlew.bat build
-java -jar summoner-fetcher-1.0.0.jar
+java -jar build/libs/summoner-fetcher-1.0.0.jar
 ```
 For **Linux** users:
 ```
 ./gradlew build 
-./java -jar summoner-fetcher-1.0.0.jar
+java -jar ./build/libs/summoner-fetcher-1.0.0.jar
 ```
 After that, the application should launch soon.
 ___
