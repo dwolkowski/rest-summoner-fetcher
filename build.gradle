@@ -6,7 +6,6 @@ plugins {
 
 group = 'pl.wolkowski'
 version = '1.0.0'
-sourceCompatibility = '17'
 
 configurations {
     compileOnly {
